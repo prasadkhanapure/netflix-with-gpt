@@ -10,3 +10,5 @@
   - Header
   - Main Movies
     - Title 
+
+- Browse Movies
