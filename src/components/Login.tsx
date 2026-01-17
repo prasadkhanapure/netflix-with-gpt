@@ -1,19 +1,43 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Header from "./Header";
 import { BG_URL } from "../utils/constants";
+import { isValidSignInFormData } from "../utils/validate";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const toggleSignIn = () => {
     setIsSignIn(!isSignIn);
+  };
+
+  const handleSignInClick = (event: any) => {
+    event.preventDefault();
+
+    const name = nameRef.current?.value ?? "";
+    const email = emailRef.current?.value ?? "";
+    const password = passwordRef.current?.value ?? "";
+
+    const message = isValidSignInFormData({ email, password, name });
+    setErrorMessage(message);
+    if (message) return;
+
+    // Auth using firebase to be implemented later ):
+
+    navigate("/browse");
   };
 
   return (
     <div>
       <Header />
       <div className="absolute">
-        <img src={BG_URL} alt="logo-image" />
+        <img className="h-screen object-cover" src={BG_URL} alt="logo-image" />
       </div>
       <form className="absolute w-full md:w-4/12 text-white bg-black left-0 right-0 mx-auto my-30 p-12 opacity-85">
         <h1 className="font-bold text-3xl py-4">
@@ -27,16 +51,22 @@ const Login = () => {
           />
         )}
         <input
+          ref={emailRef}
           className="w-full text-white bg-gray-800 p-4 my-4"
           type="text"
           placeholder="Email Address"
         />
         <input
+          ref={passwordRef}
           className="w-full text-white bg-gray-800 p-4 my-4"
           type="password"
           placeholder="Password"
         />
-        <button className="p-4 my-6 w-full rounded-lg bg-red-600 font-bold">
+        <p className="text-red-700 font-bold text-lg">{errorMessage}</p>
+        <button
+          className="p-4 my-6 w-full rounded-lg bg-red-600 font-bold"
+          onClick={handleSignInClick}
+        >
           {isSignIn ? "Sign In" : "Sign Up"}
         </button>
         <p className="py-4 cursor-pointer" onClick={toggleSignIn}>

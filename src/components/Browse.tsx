@@ -1,5 +1,18 @@
+import useNowPlayingMovies from "../hooks/useNowPlayingMovies";
+import Header from "./Header";
+import MainContainer from "./MainContainer";
+import SecondoryContainer from "./SecondoryContainer";
+
 const Browse = () => {
-  return <div>Browse</div>;
+  useNowPlayingMovies();
+
+  return (
+    <div>
+      <Header />
+      <MainContainer />
+      <SecondoryContainer />
+    </div>
+  );
 };
 
 export default Browse;
