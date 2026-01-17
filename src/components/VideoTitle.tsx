@@ -1,6 +1,6 @@
-// import React from 'react'
+import type { VideoTitleInterface } from "../types";
 
-const VideoTitle = ({ title, overview }: any) => {
+const VideoTitle = ({ title, overview }: VideoTitleInterface) => {
   return (
     <div className="w-screen aspect-video pt-[20%] px-24 absolute text-white bg-linear-to-r from-black">
       <h1 className="text-2xl md:text-6xl font-bold">{title}</h1>

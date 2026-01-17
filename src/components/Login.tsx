@@ -17,9 +17,7 @@ const Login = () => {
     setIsSignIn(!isSignIn);
   };
 
-  const handleSignInClick = (event: any) => {
-    event.preventDefault();
-
+  const handleSignInClick = () => {
     const name = nameRef.current?.value ?? "";
     const email = emailRef.current?.value ?? "";
     const password = passwordRef.current?.value ?? "";
@@ -39,7 +37,10 @@ const Login = () => {
       <div className="absolute">
         <img className="h-screen object-cover" src={BG_URL} alt="logo-image" />
       </div>
-      <form className="absolute w-full md:w-4/12 text-white bg-black left-0 right-0 mx-auto my-30 p-12 opacity-85">
+      <form
+        onSubmit={(evt) => evt.preventDefault()}
+        className="absolute w-full md:w-4/12 text-white bg-black left-0 right-0 mx-auto my-30 p-12 opacity-85"
+      >
         <h1 className="font-bold text-3xl py-4">
           {isSignIn ? "Sign In" : "Sign Up"}
         </h1>

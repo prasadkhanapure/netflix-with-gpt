@@ -1,0 +1,14 @@
+import type { MovieCardProps } from "../types";
+import { IMG_CDN_URL } from "../utils/constants";
+
+const MovieCard = ({ posterPath }: MovieCardProps) => {
+  if (!posterPath) return;
+
+  return (
+    <div className="w-48 pr-4">
+      <img alt="Movie Card" src={IMG_CDN_URL + posterPath} />
+    </div>
+  );
+};
+
+export default MovieCard;
