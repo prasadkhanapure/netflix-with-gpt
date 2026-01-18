@@ -2,7 +2,7 @@ import { useRef } from "react";
 import useGptSearchMovies from "../hooks/useGptSearchMovies";
 
 const GptSearchBar = () => {
-  const searchText = useRef(null);
+  const searchText = useRef<HTMLInputElement>(null);
   const { searchMovies } = useGptSearchMovies();
 
   const handleSearch = () => {

@@ -8,9 +8,9 @@ const normalizeTitle = (value: string) => value.trim().toLowerCase();
 const useGptSearchMovies = () => {
   const dispatch = useDispatch();
 
-  const getSearchMovie = async (movie: string) => {
+  const getSearchMovie = async (movieTitle: string) => {
     const data = await fetch(
-      `https://api.themoviedb.org/3/search/movie?query=${movie}&include_adult=false&language=en-US&page=1`,
+      `https://api.themoviedb.org/3/search/movie?query=${movieTitle}&include_adult=false&language=en-US&page=1`,
       API_OPTIONS,
     );
     const response = await data.json();
@@ -34,27 +34,25 @@ const useGptSearchMovies = () => {
         throw new Error(`Something wrong with the GPT API`);
       }
 
-      const gptMovies = gptResponse?.output[0]?.content[0]?.text?.split(",");
-      const promiseArray = gptMovies.map((movie: string) =>
-        getSearchMovie(movie),
+      const gptMoviesTitle = gptResponse?.output_text?.split(",");
+      const tmdbSearchRequests = gptMoviesTitle.map((movieTitle: string) =>
+        getSearchMovie(movieTitle),
       );
 
-      const gptSearchedMovies = await Promise.all(promiseArray);
+      const gptSearchedMovies = await Promise.all(tmdbSearchRequests);
 
-      const matchedMovies = gptMovies.map((gptTitle: string, index: number) => {
-        const tmdbResults = gptSearchedMovies[index];
+      const matchedMovies = gptMoviesTitle.map(
+        (gptTitle: string, index: number) => {
+          const tmdbResults = gptSearchedMovies[index];
 
-        const match = tmdbResults.find(
-          (movie: any) =>
-            normalizeTitle(movie.title) === normalizeTitle(gptTitle),
-        );
+          const match = tmdbResults.find(
+            (movie: any) =>
+              normalizeTitle(movie.title) === normalizeTitle(gptTitle),
+          );
 
-        if (!match) {
-          throw new Error(`Exact match not found for "${gptTitle}"`);
-        }
-
-        return match;
-      });
+          return match;
+        },
+      );
 
       dispatch(addSearchedMovie(matchedMovies));
     } catch (err) {
