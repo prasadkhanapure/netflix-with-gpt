@@ -2,6 +2,11 @@ import { useState, useRef } from "react";
 import Header from "./Header";
 import { BG_URL } from "../utils/constants";
 import { isValidSignInFormData } from "../utils/validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -17,6 +22,38 @@ const Login = () => {
     setIsSignIn(!isSignIn);
   };
 
+  const signUpUser = async (email: string, password: string) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      const user = userCredential.user;
+      console.log(user);
+      navigate("/browse");
+    } catch (error: any) {
+      const { code, message } = error;
+      setErrorMessage(`${code} - ${message}`);
+    }
+  };
+
+  const signInUser = async (email: string, password: string) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      const user = userCredential.user;
+      console.log(user);
+      navigate("/browse");
+    } catch (error: any) {
+      const { code, message } = error;
+      setErrorMessage(`${code} - ${message}`);
+    }
+  };
+
   const handleSignInClick = () => {
     const name = nameRef.current?.value ?? "";
     const email = emailRef.current?.value ?? "";
@@ -26,9 +63,11 @@ const Login = () => {
     setErrorMessage(message);
     if (message) return;
 
-    // Auth using firebase to be implemented later ):
-
-    navigate("/browse");
+    if (!isSignIn) {
+      signUpUser(email, password);
+    } else {
+      signInUser(email, password);
+    }
   };
 
   return (
