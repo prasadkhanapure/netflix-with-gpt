@@ -2,6 +2,7 @@ import { useDispatch } from "react-redux";
 import { addSearchedMovie } from "../store/gptSlice";
 import { API_OPTIONS } from "../utils/constants";
 import openAi from "../utils/openai";
+import type { Movie } from "../types";
 
 const normalizeTitle = (value: string) => value.trim().toLowerCase();
 
@@ -44,17 +45,23 @@ const useGptSearchMovies = () => {
       const matchedMovies = gptMoviesTitle.map(
         (gptTitle: string, index: number) => {
           const tmdbResults = gptSearchedMovies[index];
+          if (!tmdbResults) return null;
 
-          const match = tmdbResults.find(
-            (movie: any) =>
-              normalizeTitle(movie.title) === normalizeTitle(gptTitle),
-          );
+          const match =
+            tmdbResults.find(
+              (movie: Movie) =>
+                normalizeTitle(movie.title) === normalizeTitle(gptTitle),
+            ) ?? null;
 
           return match;
         },
       );
 
-      dispatch(addSearchedMovie(matchedMovies));
+      const filteredMovieResults = matchedMovies.filter(
+        (movie): movie is Movie => movie !== null,
+      );
+
+      dispatch(addSearchedMovie(filteredMovieResults));
     } catch (err) {
       console.error(err);
     }

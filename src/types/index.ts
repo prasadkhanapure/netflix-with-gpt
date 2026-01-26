@@ -16,6 +16,7 @@ export interface MovieCardProps {
 export interface Movie {
   id: number;
   poster_path: string | null;
+  title?: string;
   type?: string;
 }
 
