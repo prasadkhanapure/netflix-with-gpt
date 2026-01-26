@@ -2,8 +2,7 @@ import { useDispatch } from "react-redux";
 import { LOGO_URL } from "../utils/constants";
 import { toggleGptSearchView } from "../store/gptSlice";
 import { useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../utils/firebase";
+import { supabase } from "../utils/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { addUser, removeUser } from "../store/userSlice";
 
@@ -16,27 +15,29 @@ const Header = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const { uid, email, displayName, photoURL } = user;
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const { id, email, user_metadata } = session.user;
 
         dispatch(
           addUser({
-            uid: uid,
-            email: email,
-            displayName: displayName,
-            photoURL: photoURL,
+            uid: id,
+            email,
+            displayName: user_metadata?.full_name ?? null,
+            photoURL: null,
           }),
         );
+
         navigate("/browse");
       } else {
-        // User is signed out
         dispatch(removeUser());
         navigate("/");
       }
     });
 
-    return () => unsubscribe();
+    return () => subscription.unsubscribe();
   }, []);
 
   return (

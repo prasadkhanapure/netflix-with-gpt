@@ -2,11 +2,7 @@ import { useState, useRef } from "react";
 import Header from "./Header";
 import { BG_URL } from "../utils/constants";
 import { isValidSignInFormData } from "../utils/validate";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { auth } from "../utils/firebase";
+import { supabase } from "../utils/supabaseClient";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -22,36 +18,37 @@ const Login = () => {
     setIsSignIn(!isSignIn);
   };
 
-  const signUpUser = async (email: string, password: string) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const user = userCredential.user;
-      console.log(user);
-      navigate("/browse");
-    } catch (error: any) {
-      const { code, message } = error;
-      setErrorMessage(`${code} - ${message}`);
+  const signUpUser = async (email: string, password: string, name: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+        },
+      },
+    });
+
+    if (error) {
+      setErrorMessage(error.message);
+      return;
     }
+
+    navigate("/browse");
   };
 
   const signInUser = async (email: string, password: string) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const user = userCredential.user;
-      console.log(user);
-      navigate("/browse");
-    } catch (error: any) {
-      const { code, message } = error;
-      setErrorMessage(`${code} - ${message}`);
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setErrorMessage(error.message);
+      return;
     }
+
+    navigate("/browse");
   };
 
   const handleSignInClick = () => {
@@ -64,7 +61,7 @@ const Login = () => {
     if (message) return;
 
     if (!isSignIn) {
-      signUpUser(email, password);
+      signUpUser(email, password, name);
     } else {
       signInUser(email, password);
     }
