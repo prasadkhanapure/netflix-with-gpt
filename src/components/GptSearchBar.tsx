@@ -1,13 +1,23 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import useGptSearchMovies from "../hooks/useGptSearchMovies";
+import Spinner from "./Spinner";
 
 const GptSearchBar = () => {
   const searchText = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const { searchMovies } = useGptSearchMovies();
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchText.current?.value) return;
-    searchMovies(searchText.current.value);
+    try {
+      setIsLoading(true);
+      await searchMovies(searchText.current.value);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -25,8 +35,9 @@ const GptSearchBar = () => {
         <button
           onClick={handleSearch}
           className="col-span-3 m-4 py-2 px-4 bg-red-700 text-white rounded-lg"
+          disabled={isLoading}
         >
-          Search
+          {isLoading? <Spinner/>:"Search"}
         </button>
       </form>
     </div>

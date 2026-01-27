@@ -14,7 +14,7 @@
 * Practice **clean separation of concerns** (UI vs data vs auth)
 * Move beyond tutorials into **production-style thinking**
 
-## What’s New / What’s Different
+## What’s Different
 
 * GPT understands *intent*, not just movie names
 * Smart matching layer between GPT output and TMDB data
@@ -48,7 +48,7 @@
   * Centralized GPT + user state
   * UI components remain clean and dumb
 
-## 🛠 Latest Tech Stack
+## Latest Tech Stack
 
 ### Frontend
 

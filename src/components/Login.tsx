@@ -4,10 +4,12 @@ import { BG_URL } from "../utils/constants";
 import { isValidSignInFormData } from "../utils/validate";
 import { supabase } from "../utils/supabaseClient";
 import { useNavigate } from "react-router-dom";
+import Spinner from "./Spinner";
 
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const nameRef = useRef<HTMLInputElement>(null);
@@ -51,7 +53,7 @@ const Login = () => {
     navigate("/browse");
   };
 
-  const handleSignInClick = () => {
+  const handleSignInClick = async () => {
     const name = nameRef.current?.value ?? "";
     const email = emailRef.current?.value ?? "";
     const password = passwordRef.current?.value ?? "";
@@ -60,10 +62,17 @@ const Login = () => {
     setErrorMessage(message);
     if (message) return;
 
-    if (!isSignIn) {
-      signUpUser(email, password, name);
-    } else {
-      signInUser(email, password);
+    try {
+      setIsLoading(true);
+      if (!isSignIn) {
+        await signUpUser(email, password, name);
+      } else {
+        await signInUser(email, password);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -103,8 +112,9 @@ const Login = () => {
         <button
           className="p-4 my-6 w-full rounded-lg bg-red-600 font-bold"
           onClick={handleSignInClick}
+          disabled={isLoading}
         >
-          {isSignIn ? "Sign In" : "Sign Up"}
+          {isLoading ? <Spinner /> : isSignIn ? "Sign In" : "Sign Up"}
         </button>
         <p className="py-4 cursor-pointer" onClick={toggleSignIn}>
           {isSignIn
