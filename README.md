@@ -144,7 +144,7 @@ npm run dev
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Prasad Khanapure**
 Frontend Developer | React | System Design

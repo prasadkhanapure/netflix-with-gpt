@@ -50,7 +50,7 @@ const useGptSearchMovies = () => {
           const match =
             tmdbResults.find(
               (movie: Movie) =>
-                normalizeTitle(movie.title) === normalizeTitle(gptTitle),
+                normalizeTitle(movie.title || "") === normalizeTitle(gptTitle),
             ) ?? null;
 
           return match;

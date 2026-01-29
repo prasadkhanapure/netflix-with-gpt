@@ -1,7 +1,17 @@
 import { useSelector } from "react-redux";
 import MovieList from "./MovieList";
+import {
+  useNowPlayingMovies,
+  usePopularMovies,
+  useTopRatedMovies,
+  useUpcomingMovies,
+} from "../hooks";
 
 const SecondoryContainer = () => {
+  useNowPlayingMovies();
+  usePopularMovies();
+  useTopRatedMovies();
+  useUpcomingMovies();
   const movies = useSelector((store: any) => store.movies);
 
   return (
