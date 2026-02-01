@@ -10,7 +10,10 @@ import { useEffect } from "react";
 
 const Browse = () => {
   const showGptSearch = useSelector((store: any) => store.gpt.showGptSearch);
+  const user = useSelector((store: any) => store.user);
   const dispatch = useDispatch();
+
+  useIdleLogout(!!user); // Hooks can't be called conditionally, React won't allow it.
 
   useEffect(() => {
     const restoreSession = async () => {
@@ -30,11 +33,6 @@ const Browse = () => {
     };
     restoreSession();
   }, []);
-
-  const user = useSelector((store: any) => store.user);
-  if (user) {
-    useIdleLogout();
-  }
 
   return (
     <div>
