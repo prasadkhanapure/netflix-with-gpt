@@ -1,12 +1,40 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import GptSearch from "./GptSearch";
 import Header from "./Header";
 import MainContainer from "./MainContainer";
 import SecondoryContainer from "./SecondoryContainer";
+import useIdleLogout from "../hooks/useIdleLogout";
+import { addUser } from "../store/userSlice";
+import { supabase } from "../utils/supabaseClient";
+import { useEffect } from "react";
 
 const Browse = () => {
   const showGptSearch = useSelector((store: any) => store.gpt.showGptSearch);
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    const restoreSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        dispatch(
+          addUser({
+            uid: session.user.id,
+            email: session.user.email,
+            displayName: session.user.user_metadata?.full_name ?? null,
+          }),
+        );
+      }
+    };
+    restoreSession();
+  }, []);
+
+  const user = useSelector((store: any) => store.user);
+  if (user) {
+    useIdleLogout();
+  }
 
   return (
     <div>
